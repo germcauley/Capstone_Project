@@ -2,3 +2,4 @@ streamlit==1.60.0
 basic-pitch==0.4.0
 pretty-midi==0.2.11.post0
 setuptools<81
+tflite-runtime==2.14.0
