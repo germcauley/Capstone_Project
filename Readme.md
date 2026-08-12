@@ -2,7 +2,7 @@
 # AI Powered Audio to MIDI Transcription
 
 This capstone project uses Spotify's Basic Pitch model to perform transcription of audio data to MIDI, the common way for musical devices to communicate with each other.
-A user can upload a WAV or MP3, the application can then analyse the audio and produce a MIDI interpretation of the notes it detects.
+A user can upload a WAV , the application can then analyse the audio and produce a MIDI interpretation of the notes it detects.
 The generated MIDI can be played in the browser, viewed as staff notation and downloaded for use in compatible music software.
 ## Live application link
 - [Open the deployed application](https://capstoneproject-audio-to-midi.streamlit.app/)
@@ -13,7 +13,7 @@ The purpose of this project is to make it easier to transcribe audio to MIDI and
 
 ## Main features
 
-- Upload audio in WAV or MP3 format
+- Upload audio in WAV format
 - Playback of the original recording
 - Transcribe the original audio using the Basic Pitch model
 - Display the number of detected notes
