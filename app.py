@@ -59,8 +59,6 @@ def display_midi_player(midi_bytes):
     st.iframe(player_html, height=300)
 
 
-st.write("test")
-
 st.title("Capstone project Audio upload > MIDI > Harmony generation")
 
 audio_file =st.file_uploader("Upload an audio file", type=["wav", "mp3"])
