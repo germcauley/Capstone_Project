@@ -58,6 +58,7 @@ The application explores whether artificial intelligence can help turn a recorde
 15. The original note timings from Basic Pitch transcription are used to determine the start and end points for each chord
 16. A MIDI file is written containing the melody and the chord tracks
 
+## Diagram of how it works end to end:
 ```mermaid
 flowchart TD
     A["User uploads audio file"] --> B["saves as temporary audio file"]
