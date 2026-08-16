@@ -111,41 +111,84 @@ flowchart TD
 
 ### Installation
 
+## Running the application locally
+
+### Requirements
+
+- Git
+- Python 3.10
+- A Hugging Face account and access token
+- An internet connection
+
+### Installation
+
 1. Clone the repository:
 
    ```bash
    git clone https://github.com/germcauley/Capstone_Project.git
    cd Capstone_Project
    ```
+
 2. Create a Python 3.10 virtual environment:
 
    ```bash
    python3.10 -m venv .venv
    ```
 
-3. Activate the environment:
+   This may take a while as it installs a lot of packages.
+
+3. Activate the virtual environment:
 
    ```bash
    source .venv/bin/activate
    ```
 
-4. Install the dependencies from requirements.txt:
+4. Confirm that Python 3.10 is the version being used, if not see the troubleshoting section:
 
    ```bash
-   python -m pip install -r requirements.txt
-   ```
-5. Create .streamlit/secrets.toml and add your Hugging Face access token to the file:
-    ```toml
-   HF_TOKEN = "your token goes here"
+   python --version
    ```
 
-6. Start the application:
+5. Install the project dependencies:
+
+   ```bash
+   python -m pip install --upgrade pip
+   python -m pip install -r requirements.txt
+   ```
+
+6. Create `.streamlit/secrets.toml` using `touch .streamlit/secrets.toml` and add your Hugging Face access token:
+
+   ```toml
+   HF_TOKEN = "your_hugging_face_token"
+   ```
+
+   This file is excluded from Git by `.gitignore` and must never be committed.
+
+7. Start the application:
 
    ```bash
    python -m streamlit run app.py
    ```
 
-7. Open `http://localhost:8501` in a browser
+8. Open `http://localhost:8501` in a browser.
+
+### Troubleshooting
+
+If activating the virtual environment does not select Python 3.10, use the virtual environments executable directly:
+
+```bash
+./.venv/bin/python --version
+./.venv/bin/python -m pip install -r requirements.txt
+./.venv/bin/python -m streamlit run app.py
+```
+
+If  `pip` is missing, install it using:
+
+```bash
+./.venv/bin/python -m ensurepip --upgrade
+```
+
+Basic Pitch may display warnings about TensorFlow, TFLite or scikit.
 
 ## Deployment
 
