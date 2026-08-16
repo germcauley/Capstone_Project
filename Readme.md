@@ -107,17 +107,6 @@ flowchart TD
 - Git
 - Python 3.10
 - A Hugging Face account and access token
-- An internet connection is required for the for MIDI player and for Hugging Face inference to work
-
-### Installation
-
-## Running the application locally
-
-### Requirements
-
-- Git
-- Python 3.10
-- A Hugging Face account and access token
 - An internet connection
 
 ### Installation
