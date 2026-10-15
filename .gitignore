@@ -1,21 +1,7 @@
-# Virtual environment
-.venv/
-
-# Python cache files
-__pycache__/
-*.py[cod]
-
-# macOS files
+node_modules/
+dist/
 .DS_Store
-
-# Generated project outputs
-outputs/
-*.mid
-*.midi
-
-# Local environment variables and secrets
 .env
-.streamlit/secrets.toml
-
-# VS Code settings
-.vscode/
+.env.local
+*.log
+.vite/
