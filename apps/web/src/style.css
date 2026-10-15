@@ -1,0 +1,23 @@
+:root {
+  color-scheme: light dark;
+  --bg: #fafaf7;
+  --fg: #1c1b19;
+  --muted: #6b675f;
+  --accent: #b4491f;
+  --card: #fff;
+  --line: #e4e0d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #17160f; --fg: #f0ede4; --muted: #a29d90; --accent: #e8794a; --card: #211f17; --line: #38352a; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 16px; }
+h1 { font-size: 1.4rem; margin: 8px 0 12px; }
+.bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+button { font: inherit; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; min-height: 44px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button:disabled { opacity: .5; cursor: default; }
+.muted { color: var(--muted); font-size: .9rem; }
+.score { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px; overflow-x: auto; }
+.score svg { width: 100%; height: auto; display: block; }
