@@ -40,6 +40,8 @@ function splitDuration(len: number): number[] {
 }
 
 interface Piece {
+  /** absolute start in sixteenths within the voice */
+  start: number;
   pitches: number[] | null;
   duration: number;
   tieStart: boolean;
@@ -50,8 +52,10 @@ interface Piece {
 function toMeasures(voice: Voice, mLen: number): Piece[][] {
   const measures: Piece[][] = [[]];
   let room = mLen;
-  const push = (p: Piece) => {
-    measures[measures.length - 1].push(p);
+  let abs = 0;
+  const push = (p: Omit<Piece, "start">) => {
+    measures[measures.length - 1].push({ ...p, start: abs });
+    abs += p.duration;
     room -= p.duration;
     if (room === 0) {
       measures.push([]);
@@ -84,10 +88,11 @@ function toMeasures(voice: Voice, mLen: number): Piece[][] {
     const used = mLen - room;
     if (used < mLen) {
       for (const d of splitDuration(mLen - used)) {
-        measures[measures.length - 1].push({ pitches: null, duration: d, tieStart: false, tieStop: false });
+        push({ pitches: null, duration: d, tieStart: false, tieStop: false });
       }
     }
   }
+  if (measures.length > 1 && measures[measures.length - 1].length === 0) measures.pop();
   return measures;
 }
 
@@ -115,7 +120,7 @@ export function toMusicXML(score: Score): string {
       }
       voiceMeasures.forEach((vm, vi) => {
         if (vi > 0) xml += `<backup><duration>${mLen}</duration></backup>\n`;
-        const pieces = vm[m] ?? [{ pitches: null, duration: mLen, tieStart: false, tieStop: false }];
+        const pieces = vm[m] ?? [{ start: m * mLen, pitches: null, duration: mLen, tieStart: false, tieStop: false }];
         for (const pc of pieces) {
           const type = TYPES.find(([d]) => d === pc.duration)!;
           const dot = type[2] ? "<dot/>" : "";
@@ -125,7 +130,7 @@ export function toMusicXML(score: Score): string {
           }
           pc.pitches.forEach((midi, ci) => {
             const s = spellPitch(midi, score.keyFifths);
-            xml += `<note>${ci > 0 ? "<chord/>" : ""}<pitch><step>${s.step}</step>` +
+            xml += `<note id="n-${esc(p.id)}-${vi}-${pc.start}-c${ci}">${ci > 0 ? "<chord/>" : ""}<pitch><step>${s.step}</step>` +
               (s.alter ? `<alter>${s.alter}</alter>` : "") +
               `<octave>${s.octave}</octave></pitch><duration>${pc.duration}</duration>` +
               (pc.tieStop ? `<tie type="stop"/>` : "") +

@@ -21,3 +21,19 @@ button:disabled { opacity: .5; cursor: default; }
 .muted { color: var(--muted); font-size: .9rem; }
 .score { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px; overflow-x: auto; }
 .score svg { width: 100%; height: auto; display: block; }
+:root { --roll-white: #fffefb; --roll-black: #f0ece0; }
+@media (prefers-color-scheme: dark) { :root { --roll-white: #26241b; --roll-black: #1d1b13; } }
+button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.seg { display: inline-flex; }
+.seg button:first-child { border-radius: 8px 0 0 8px; }
+.seg button:last-child { border-radius: 0 8px 8px 0; margin-left: -1px; }
+.tools button { padding: 8px 12px; min-width: 44px; }
+.roll { overflow: auto; max-height: 52vh; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.score g.note.sel, .score g.note.sel * { fill: var(--accent) !important; stroke: var(--accent) !important; }
+.score g.note { cursor: pointer; }
+.kbd { margin: 12px 0; }
+.kbd-keys { position: relative; height: 120px; touch-action: manipulation; }
+.kbd .white, .kbd .black { position: absolute; padding: 0; border-radius: 0 0 6px 6px; }
+.kbd .white { top: 0; height: 100%; background: #fff; border: 1px solid #999; }
+.kbd .black { top: 0; height: 62%; background: #222; border: 1px solid #000; z-index: 2; }
+.kbd-oct { display: flex; gap: 12px; align-items: center; justify-content: center; margin-top: 8px; }

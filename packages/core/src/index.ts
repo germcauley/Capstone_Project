@@ -4,3 +4,5 @@ export * from "./quantize.js";
 export * from "./wav.js";
 export * from "./score.js";
 export * from "./musicxml.js";
+export * from "./edit.js";
+export * from "./history.js";
