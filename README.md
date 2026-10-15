@@ -20,4 +20,5 @@ pnpm spike                         # pitch-track legacy/sample_audio_files
 ## Status
 
 Done: score model, staff render, playback, piano roll + staff editing, step entry keyboard, undo/redo, add staves, mic hum capture (click track, tempo + meter, key suggestion, review before adding).
-Next: Basic Pitch transcription path, harmony, expand melody, orchestration.
+Also: rule-based harmony (Viterbi chords, chord symbols, four accompaniment styles).
+Next: Basic Pitch transcription path, expand melody, orchestration.

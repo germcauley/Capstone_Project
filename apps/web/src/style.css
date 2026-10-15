@@ -56,3 +56,4 @@ button[aria-pressed="true"] { background: var(--accent); border-color: var(--acc
 .level i { display: block; height: 100%; background: var(--accent); }
 .err { color: #c0392b; margin: 8px 0 0; }
 .review { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 8px; }
+.prog { margin: 8px 0 0; }

@@ -9,6 +9,7 @@ import { play, preview, stop } from "./audio";
 import { PianoRoll, PART_COLORS, type Sel } from "./PianoRoll";
 import { Keyboard } from "./Keyboard";
 import { CapturePanel, type ApplyTake } from "./CapturePanel";
+import { HarmonyPanel, type ApplyHarmony } from "./HarmonyPanel";
 
 const blankScore: Score = {
   title: "Untitled",
@@ -107,7 +108,7 @@ export function App() {
   function applyTake(a: ApplyTake) {
     const id = `P${score.parts.length + 1}`;
     edit((s) => {
-      const base = a.keyFifths != null ? { ...s, keyFifths: a.keyFifths } : s;
+      const base = a.keyFifths != null ? { ...s, keyFifths: a.keyFifths, mode: a.keyMode ?? s.mode } : s;
       if (a.mode === "new") {
         return {
           ...base,
@@ -119,6 +120,25 @@ export function App() {
     if (a.mode === "new") setPartId(id);
     setSel(null);
     setCursor(null);
+  }
+
+  function applyHarmony(a: ApplyHarmony) {
+    edit((s) => ({
+      ...s,
+      mode: a.mode,
+      chords: a.spans.map((x) => ({ start: x.start, root: x.chord.root, quality: x.chord.quality })),
+      parts: [
+        ...s.parts.filter((p) => p.id !== "harmony"),
+        { id: "harmony", name: "Harmony", instrument: { program: 0, clef: "bass" as const }, voices: [a.voice] },
+      ],
+    }));
+    setSel(null);
+  }
+
+  function removeHarmony() {
+    edit((s) => ({ ...s, chords: undefined, parts: s.parts.filter((p) => p.id !== "harmony") }));
+    if (partId === "harmony") setPartId(score.parts[0].id);
+    setSel(null);
   }
 
   function onStaffClick(e: React.MouseEvent) {
@@ -200,6 +220,17 @@ export function App() {
         <button onClick={() => addStaff("treble")}>+ Treble</button>
         <button onClick={() => addStaff("bass")}>+ Bass</button>
       </div>
+
+      {partId !== "harmony" && (
+        <HarmonyPanel
+          score={score}
+          melody={voiceOf(partId)}
+          melodyName={score.parts[activeIndex]?.name ?? ""}
+          hasHarmony={score.parts.some((p) => p.id === "harmony")}
+          onApply={applyHarmony}
+          onRemove={removeHarmony}
+        />
+      )}
 
       {error && <p role="alert">{error}</p>}
 

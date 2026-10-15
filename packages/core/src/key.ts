@@ -51,3 +51,29 @@ export function detectKey(notes: Pick<QuantizedNote, "pitch" | "durationBeats">[
   }
   return best;
 }
+
+/**
+ * Major or minor, given the key signature is already known.
+ * Compares the signature's major key against its relative minor.
+ */
+export function detectMode(
+  notes: Pick<QuantizedNote, "pitch" | "durationBeats">[],
+  keyFifths: number,
+): "major" | "minor" | null {
+  if (!notes.length) return null;
+  const hist = new Array(12).fill(0);
+  for (const n of notes) hist[((n.pitch % 12) + 12) % 12] += n.durationBeats;
+  const major = (((keyFifths * 7) % 12) + 12) % 12;
+  const minor = (major + 9) % 12;
+  const rot = (profile: number[], tonic: number) => profile.map((_, i) => profile[(i - tonic + 12) % 12]);
+  // a tune that starts or ends on the tonic is strong evidence; count first/last pitch class
+  const first = ((notes[0].pitch % 12) + 12) % 12;
+  const last = ((notes[notes.length - 1].pitch % 12) + 12) % 12;
+  let majScore = correlate(hist, rot(MAJOR, major));
+  let minScore = correlate(hist, rot(MINOR, minor));
+  for (const pc of [first, last]) {
+    if (pc === major) majScore += 0.05;
+    if (pc === minor) minScore += 0.05;
+  }
+  return majScore >= minScore ? "major" : "minor";
+}

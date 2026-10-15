@@ -49,7 +49,7 @@ interface Piece {
 }
 
 /** Cut events at barlines and into notatable lengths, adding ties. */
-function toMeasures(voice: Voice, mLen: number): Piece[][] {
+function toMeasures(voice: Voice, mLen: number, cuts: number[] = []): Piece[][] {
   const measures: Piece[][] = [[]];
   let room = mLen;
   let abs = 0;
@@ -67,7 +67,8 @@ function toMeasures(voice: Voice, mLen: number): Piece[][] {
     const isNote = ev.kind === "note";
     let first = true;
     while (left > 0) {
-      const chunk = Math.min(left, room);
+      const nextCut = cuts.find((c) => c > abs);
+      const chunk = Math.min(left, room, nextCut === undefined ? Infinity : nextCut - abs);
       const pieces = splitDuration(chunk);
       pieces.forEach((d, i) => {
         const last = left - chunk === 0 && i === pieces.length - 1;
@@ -96,6 +97,17 @@ function toMeasures(voice: Voice, mLen: number): Piece[][] {
   return measures;
 }
 
+function harmonyXml(ch: { root: number; quality: string }, keyFifths: number): string {
+  const sp = spellPitch(60 + ch.root, keyFifths);
+  const kind = {
+    maj: `<kind text="">major</kind>`,
+    min: `<kind text="m">minor</kind>`,
+    dim: `<kind text="dim">diminished</kind>`,
+    dom7: `<kind text="7">dominant</kind>`,
+  }[ch.quality as "maj" | "min" | "dim" | "dom7"];
+  return `<harmony><root><root-step>${sp.step}</root-step>${sp.alter ? `<root-alter>${sp.alter}</root-alter>` : ""}</root>${kind}</harmony>\n`;
+}
+
 function esc(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
@@ -103,7 +115,8 @@ function esc(s: string) {
 export function toMusicXML(score: Score): string {
   const mLen = measureLength(score.timeSig);
   const parts = score.parts.map((p, pi) => {
-    const voiceMeasures = p.voices.map((v) => toMeasures(v, mLen));
+    const cuts = pi === 0 ? (score.chords ?? []).map((c) => c.start).sort((a, b) => a - b) : [];
+    const voiceMeasures = p.voices.map((v) => toMeasures(v, mLen, cuts));
     const nMeasures = Math.max(1, ...voiceMeasures.map((m) => m.length));
     const clef = p.instrument.clef === "bass" ? ["F", 4] : ["G", 2];
     let xml = `<part id="${esc(p.id)}">\n`;
@@ -111,7 +124,7 @@ export function toMusicXML(score: Score): string {
       xml += `<measure number="${m + 1}">\n`;
       if (m === 0) {
         xml += `<attributes><divisions>${DIVISIONS_PER_QUARTER}</divisions>` +
-          `<key><fifths>${score.keyFifths}</fifths></key>` +
+          `<key><fifths>${score.keyFifths}</fifths>${score.mode ? `<mode>${score.mode}</mode>` : ""}</key>` +
           `<time><beats>${score.timeSig.beats}</beats><beat-type>${score.timeSig.beatType}</beat-type></time>` +
           `<clef><sign>${clef[0]}</sign><line>${clef[1]}</line></clef></attributes>\n`;
         if (pi === 0) {
@@ -122,6 +135,9 @@ export function toMusicXML(score: Score): string {
         if (vi > 0) xml += `<backup><duration>${mLen}</duration></backup>\n`;
         const pieces = vm[m] ?? [{ start: m * mLen, pitches: null, duration: mLen, tieStart: false, tieStop: false }];
         for (const pc of pieces) {
+          if (pi === 0 && vi === 0) {
+            for (const ch of score.chords ?? []) if (ch.start === pc.start) xml += harmonyXml(ch, score.keyFifths);
+          }
           const type = TYPES.find(([d]) => d === pc.duration)!;
           const dot = type[2] ? "<dot/>" : "";
           if (!pc.pitches) {

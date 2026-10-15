@@ -38,12 +38,22 @@ export interface Part {
   voices: Voice[];
 }
 
+export interface ChordMark {
+  /** start in sixteenths, aligned to the first staff */
+  start: number;
+  root: number;
+  quality: "maj" | "min" | "dim" | "dom7";
+}
+
 export interface Score {
   title: string;
   bpm: number;
   timeSig: { beats: number; beatType: number };
   /** key signature as circle-of-fifths count: 0=C, 1=G, -1=F, 2=D ... */
   keyFifths: number;
+  mode?: "major" | "minor";
+  /** chord symbols printed above the first staff */
+  chords?: ChordMark[];
   parts: Part[];
 }
 

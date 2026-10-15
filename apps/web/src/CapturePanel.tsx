@@ -15,6 +15,7 @@ export interface ApplyTake {
   voice: Voice;
   clef: "treble" | "bass";
   keyFifths: number | null;
+  keyMode: "major" | "minor" | null;
 }
 
 interface Props {
@@ -195,10 +196,10 @@ export function CapturePanel({ score, activeName, onTempo, onMeter, onApply }: P
           </div>
           <div className="bar">
             <button onClick={preview}>{previewing ? "Stop preview" : "Preview"}</button>
-            <button className="primary" onClick={() => { onApply({ mode: "new", voice, clef, keyFifths: useKey && key ? key.fifths : null }); setTake(null); setPhase("idle"); }}>
+            <button className="primary" onClick={() => { onApply({ mode: "new", voice, clef, keyFifths: useKey && key ? key.fifths : null, keyMode: useKey && key ? key.mode : null }); setTake(null); setPhase("idle"); }}>
               Add as new staff
             </button>
-            <button onClick={() => { onApply({ mode: "replace", voice, clef, keyFifths: useKey && key ? key.fifths : null }); setTake(null); setPhase("idle"); }}>
+            <button onClick={() => { onApply({ mode: "replace", voice, clef, keyFifths: useKey && key ? key.fifths : null, keyMode: useKey && key ? key.mode : null }); setTake(null); setPhase("idle"); }}>
               Replace “{activeName}”
             </button>
             <button onClick={() => { setTake(null); setPhase("idle"); }}>Discard</button>

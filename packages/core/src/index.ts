@@ -8,3 +8,5 @@ export * from "./edit.js";
 export * from "./history.js";
 export * from "./key.js";
 export * from "./transcribe.js";
+export * from "./harmony.js";
+export * from "./accompaniment.js";

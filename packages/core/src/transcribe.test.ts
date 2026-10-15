@@ -69,3 +69,19 @@ describe("detectKey", () => {
     expect(detectKey([])).toBeNull();
   });
 });
+
+import { detectMode } from "./index.js";
+
+describe("detectMode", () => {
+  const seq = (pitches: number[]) => pitches.map((pitch) => ({ pitch, durationBeats: 1 }));
+  it("calls Ode to Joy C major even though E is the most common note", () => {
+    const ode = seq([64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 64, 62, 62]);
+    expect(detectMode(ode, 0)).toBe("major");
+  });
+  it("calls an A-centred tune A minor in the C signature", () => {
+    expect(detectMode(seq([69, 72, 71, 69, 68, 69, 76, 72, 69]), 0)).toBe("minor");
+  });
+  it("is null with no notes", () => {
+    expect(detectMode([], 0)).toBeNull();
+  });
+});
