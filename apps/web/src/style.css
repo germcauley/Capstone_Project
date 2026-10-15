@@ -37,3 +37,22 @@ button[aria-pressed="true"] { background: var(--accent); border-color: var(--acc
 .kbd .white { top: 0; height: 100%; background: #fff; border: 1px solid #999; }
 .kbd .black { top: 0; height: 62%; background: #222; border: 1px solid #000; z-index: 2; }
 .kbd-oct { display: flex; gap: 12px; align-items: center; justify-content: center; margin-top: 8px; }
+.capture { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+.field { display: inline-flex; flex-direction: column; gap: 2px; font-size: .8rem; color: var(--muted); }
+.field.check { flex-direction: row; align-items: center; gap: 6px; align-self: end; min-height: 44px; }
+.field select, .field input[type=number] { font: inherit; min-height: 44px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.stepper { display: inline-flex; align-items: center; }
+.stepper input { width: 64px; text-align: center; border-radius: 0; margin: 0 -1px; }
+.stepper button { padding: 0 12px; min-width: 40px; }
+.stepper button:first-child { border-radius: 8px 0 0 8px; }
+.stepper button:last-child { border-radius: 0 8px 8px 0; }
+.rec { align-self: end; margin-left: auto; }
+.status { margin-top: 8px; }
+.count { font-size: 1.5rem; font-weight: 600; }
+.meter { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.meter .note { font-size: 1.6rem; font-weight: 600; min-width: 4ch; }
+.cents, .level { position: relative; height: 10px; flex: 1; background: var(--line); border-radius: 5px; overflow: hidden; }
+.cents i { position: absolute; top: 0; width: 4px; height: 100%; background: var(--accent); }
+.level i { display: block; height: 100%; background: var(--accent); }
+.err { color: #c0392b; margin: 8px 0 0; }
+.review { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 8px; }

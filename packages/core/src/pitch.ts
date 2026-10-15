@@ -57,3 +57,31 @@ export function trackPitch(
   }
   return frames;
 }
+
+export interface FrameAnalysis {
+  midi: number | null;
+  clarity: number;
+  rms: number;
+}
+
+const detectors = new Map<number, PitchDetector<Float32Array>>();
+
+/** One-shot analysis of a single audio frame, for live pitch meters. */
+export function analyzeFrame(
+  frame: Float32Array,
+  sampleRate: number,
+  opts: Pick<TrackOptions, "minClarity" | "minRms" | "minHz" | "maxHz"> = {},
+): FrameAnalysis {
+  let sum = 0;
+  for (let i = 0; i < frame.length; i++) sum += frame[i] * frame[i];
+  const rms = Math.sqrt(sum / frame.length);
+  if (rms < (opts.minRms ?? 0.01)) return { midi: null, clarity: 0, rms };
+  let det = detectors.get(frame.length);
+  if (!det) {
+    det = PitchDetector.forFloat32Array(frame.length);
+    detectors.set(frame.length, det);
+  }
+  const [hz, clarity] = det.findPitch(frame, sampleRate);
+  const voiced = clarity >= (opts.minClarity ?? 0.9) && hz >= (opts.minHz ?? 70) && hz <= (opts.maxHz ?? 1400);
+  return { midi: voiced ? hzToMidi(hz) : null, clarity, rms };
+}

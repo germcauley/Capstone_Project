@@ -6,3 +6,5 @@ export * from "./score.js";
 export * from "./musicxml.js";
 export * from "./edit.js";
 export * from "./history.js";
+export * from "./key.js";
+export * from "./transcribe.js";

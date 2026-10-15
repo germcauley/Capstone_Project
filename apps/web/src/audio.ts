@@ -5,6 +5,11 @@ let ctx: AudioContext | null = null;
 let piano: SplendidGrandPiano | null = null;
 let stopFns: (() => void)[] = [];
 
+export function getContext(): AudioContext {
+  ctx ??= new AudioContext();
+  return ctx;
+}
+
 async function ready() {
   ctx ??= new AudioContext();
   await ctx.resume();

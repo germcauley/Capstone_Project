@@ -8,6 +8,15 @@ import { renderMusicXML } from "./render";
 import { play, preview, stop } from "./audio";
 import { PianoRoll, PART_COLORS, type Sel } from "./PianoRoll";
 import { Keyboard } from "./Keyboard";
+import { CapturePanel, type ApplyTake } from "./CapturePanel";
+
+const blankScore: Score = {
+  title: "Untitled",
+  bpm: 100,
+  timeSig: { beats: 4, beatType: 4 },
+  keyFifths: 0,
+  parts: [{ id: "P1", name: "Melody", instrument: { program: 0, clef: "treble" }, voices: [{ events: [] }] }],
+};
 
 const DURATIONS: [number, string][] = [[1, "1/16"], [2, "1/8"], [3, "1/8."], [4, "1/4"], [6, "1/4."], [8, "1/2"], [16, "Whole"]];
 type View = "staff" | "roll";
@@ -95,6 +104,23 @@ export function App() {
     setCursor(null);
   }
 
+  function applyTake(a: ApplyTake) {
+    const id = `P${score.parts.length + 1}`;
+    edit((s) => {
+      const base = a.keyFifths != null ? { ...s, keyFifths: a.keyFifths } : s;
+      if (a.mode === "new") {
+        return {
+          ...base,
+          parts: [...base.parts, { id, name: `Take ${base.parts.length + 1}`, instrument: { program: 0, clef: a.clef }, voices: [a.voice] }],
+        };
+      }
+      return mapVoice(base, partId, 0, () => a.voice);
+    });
+    if (a.mode === "new") setPartId(id);
+    setSel(null);
+    setCursor(null);
+  }
+
   function onStaffClick(e: React.MouseEvent) {
     const g = (e.target as Element).closest("g.note");
     const m = g?.id.match(/^n-(.+)-(\d+)-(\d+)-c\d+$/);
@@ -138,7 +164,7 @@ export function App() {
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  const activeIndex = score.parts.findIndex((p) => p.id === partId);
+  const activeIndex = Math.max(0, score.parts.findIndex((p) => p.id === partId));
 
   return (
     <main>
@@ -153,8 +179,16 @@ export function App() {
           <button aria-pressed={view === "staff"} onClick={() => setView("staff")}>Staff</button>
           <button aria-pressed={view === "roll"} onClick={() => setView("roll")}>Roll</button>
         </span>
-        <span className="muted">{score.bpm} bpm · {score.timeSig.beats}/{score.timeSig.beatType}</span>
+        <button onClick={() => { setHist(createHistory(blankScore)); setPartId("P1"); setSel(null); setCursor(null); }}>New</button>
       </div>
+
+      <CapturePanel
+        score={score}
+        activeName={score.parts[activeIndex]?.name ?? ""}
+        onTempo={(bpm) => edit((s) => ({ ...s, bpm }))}
+        onMeter={(beats, beatType) => edit((s) => ({ ...s, timeSig: { beats, beatType } }))}
+        onApply={applyTake}
+      />
 
       <div className="bar">
         {score.parts.map((p, i) => (
