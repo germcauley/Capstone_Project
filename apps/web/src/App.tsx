@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   commit, createHistory, entryCursor, insertNote, mapVoice, measureLength, placedNotes,
-  redo, removeNoteAt, toMusicXML, undo, updateNoteAt, type History, type Score,
+  appendCandidate, redo, removeNoteAt, sectionStart, toMusicXML, undo, updateNoteAt, voiceFromPlacedNotes,
+  type Candidate, type ExpandMode, type ExpandRequest, type History, type Score,
 } from "@composer/core";
 import { demoScore } from "./demo";
 import { renderMusicXML } from "./render";
@@ -10,6 +11,7 @@ import { PianoRoll, PART_COLORS, type Sel } from "./PianoRoll";
 import { Keyboard } from "./Keyboard";
 import { CapturePanel, type ApplyTake } from "./CapturePanel";
 import { HarmonyPanel, type ApplyHarmony } from "./HarmonyPanel";
+import { ExpandPanel, type GhostNotes } from "./ExpandPanel";
 
 const blankScore: Score = {
   title: "Untitled",
@@ -34,6 +36,7 @@ export function App() {
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [ghost, setGhost] = useState<GhostNotes | null>(null);
   const staffBox = useRef<HTMLDivElement>(null);
   const renderSeq = useRef(0);
 
@@ -141,6 +144,23 @@ export function App() {
     setSel(null);
   }
 
+  function acceptCandidate(c: Candidate, mode: ExpandMode) {
+    const src = score.parts.find((p) => p.id === partId)!;
+    if (mode === "vary") {
+      const id = `P${score.parts.length + 1}`;
+      edit((s) => ({
+        ...s,
+        parts: [...s.parts, { id, name: `${src.name} (variation)`, instrument: src.instrument, voices: [voiceFromPlacedNotes(c.notes)] }],
+      }));
+      setPartId(id);
+    } else {
+      const req = { melody: src.voices[0], timeSig: score.timeSig } as ExpandRequest;
+      edit((s) => mapVoice(s, partId, 0, (v) => appendCandidate(v, c, sectionStart({ ...req, melody: v }))));
+    }
+    setSel(null);
+    setCursor(null);
+  }
+
   function onStaffClick(e: React.MouseEvent) {
     const g = (e.target as Element).closest("g.note");
     const m = g?.id.match(/^n-(.+)-(\d+)-(\d+)-c\d+$/);
@@ -232,6 +252,11 @@ export function App() {
         />
       )}
 
+      {partId !== "harmony" && score.parts[activeIndex] && (
+        <ExpandPanel score={score} part={score.parts[activeIndex]} onGhost={setGhost} onAccept={acceptCandidate} />
+      )}
+      {ghost && view === "staff" && <p className="muted">Showing a candidate outline in Roll view. <button onClick={() => setView("roll")}>Show in Roll</button></p>}
+
       {error && <p role="alert">{error}</p>}
 
       {view === "staff" ? (
@@ -245,6 +270,7 @@ export function App() {
             activePartId={partId}
             duration={duration}
             measure={measure}
+            ghost={ghost?.partId === partId ? ghost.notes : undefined}
             onAdd={(id, start, pitch) => addAt(id, start, pitch)}
             onSelect={(s) => { setSel(s); if (s) setPartId(s.partId); }}
             onMove={(s, start, dp) =>

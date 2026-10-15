@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
-    "build": "tsc --noEmit && vite build"
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "dev:lan": "vite --host"
   },
   "dependencies": {
     "@composer/core": "workspace:*",

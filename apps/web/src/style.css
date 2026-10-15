@@ -57,3 +57,10 @@ button[aria-pressed="true"] { background: var(--accent); border-color: var(--acc
 .err { color: #c0392b; margin: 8px 0 0; }
 .review { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 8px; }
 .prog { margin: 8px 0 0; }
+.cands { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.cands li { border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+.cands li.on { border-color: var(--accent); }
+.cand { display: grid; grid-template-columns: 120px 1fr; gap: 2px 12px; width: 100%; text-align: left; background: transparent; border: 0; padding: 4px; }
+.cand .mini { grid-row: span 2; width: 120px; height: 36px; background: var(--bg); border-radius: 6px; }
+.cand .label { font-weight: 600; }
+.cand[aria-pressed="true"] { background: transparent; color: inherit; }

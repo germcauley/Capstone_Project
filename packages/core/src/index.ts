@@ -10,3 +10,4 @@ export * from "./key.js";
 export * from "./transcribe.js";
 export * from "./harmony.js";
 export * from "./accompaniment.js";
+export * from "./expand.js";

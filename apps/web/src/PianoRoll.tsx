@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { placedNotes, scoreLength, type Score } from "@composer/core";
+import { placedNotes, scoreLength, type Placed, type Score } from "@composer/core";
 
 export interface Sel {
   partId: string;
@@ -20,6 +20,8 @@ interface Props {
   activePartId: string;
   duration: number;
   measure: number;
+  /** candidate notes drawn as dashed outlines, not editable */
+  ghost?: Placed[];
   onAdd: (partId: string, start: number, pitch: number) => void;
   onSelect: (s: Sel | null) => void;
   onMove: (s: Sel, newStart: number, pitchDelta: number) => void;
@@ -41,9 +43,10 @@ export function PianoRoll(p: Props) {
     // fixed C2-C7 so the grid never shifts under the pointer while editing
     const min = Math.min(36, ...all);
     const max = Math.max(96, ...all);
-    const total = Math.ceil((scoreLength(score) + p.measure) / p.measure) * p.measure;
+    const ghostEnd = Math.max(0, ...(p.ghost ?? []).map((n) => n.start + n.duration));
+    const total = Math.ceil((Math.max(scoreLength(score), ghostEnd) + p.measure) / p.measure) * p.measure;
     return { lo: min, hi: max, cols: Math.max(total, p.measure * 4) };
-  }, [score, p.measure]);
+  }, [score, p.measure, p.ghost]);
 
   const rows = hi - lo + 1;
 
@@ -190,6 +193,13 @@ export function PianoRoll(p: Props) {
               ));
             }),
           ),
+        )}
+        {(p.ghost ?? []).flatMap((n) =>
+          n.pitches.map((pitch) => (
+            <rect key={`g-${n.start}-${pitch}`} x={n.start * CELL_W + 1} y={yOf(pitch) + 1}
+              width={n.duration * CELL_W - 2} height={ROW_H - 2} rx={3}
+              fill="var(--accent)" fillOpacity={0.18} stroke="var(--accent)" strokeDasharray="4 3" pointerEvents="none" />
+          )),
         )}
       </svg>
     </div>
