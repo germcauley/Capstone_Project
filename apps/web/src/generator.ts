@@ -1,7 +1,7 @@
-import { llmGenerator, type MelodyGenerator } from "@composer/core";
+import { llmGenerator, type Complete, type MelodyGenerator } from "@composer/core";
 
 /** Calls the local proxy, which talks to the Claude CLI (dev) or the Anthropic API (prod). */
-export const proxyGenerator: MelodyGenerator = llmGenerator("claude-proxy", async (system, prompt) => {
+export const proxyComplete: Complete = async (system, prompt) => {
   let res: Response;
   try {
     res = await fetch("/api/generate", {
@@ -15,7 +15,9 @@ export const proxyGenerator: MelodyGenerator = llmGenerator("claude-proxy", asyn
   const body = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
   if (!res.ok || !body.text) throw new Error(body.error || `Generator failed (${res.status})`);
   return body.text;
-});
+};
+
+export const proxyGenerator: MelodyGenerator = llmGenerator("claude-proxy", proxyComplete);
 
 export async function proxyHealth(): Promise<string | null> {
   try {

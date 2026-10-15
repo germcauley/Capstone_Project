@@ -12,6 +12,7 @@ import { Keyboard } from "./Keyboard";
 import { CapturePanel, type ApplyTake } from "./CapturePanel";
 import { HarmonyPanel, type ApplyHarmony } from "./HarmonyPanel";
 import { ExpandPanel, type GhostNotes } from "./ExpandPanel";
+import { OrchestratePanel, type ApplyOrchestra } from "./OrchestratePanel";
 
 const blankScore: Score = {
   title: "Untitled",
@@ -138,6 +139,17 @@ export function App() {
     setSel(null);
   }
 
+  function applyOrchestra(a: ApplyOrchestra) {
+    edit((s) => ({ ...s, parts: [...s.parts.filter((p) => !p.id.startsWith("orch-")), ...a.parts] }));
+    setSel(null);
+  }
+
+  function removeOrchestra() {
+    edit((s) => ({ ...s, parts: s.parts.filter((p) => !p.id.startsWith("orch-")) }));
+    if (partId.startsWith("orch-")) setPartId(score.parts[0].id);
+    setSel(null);
+  }
+
   function removeHarmony() {
     edit((s) => ({ ...s, chords: undefined, parts: s.parts.filter((p) => p.id !== "harmony") }));
     if (partId === "harmony") setPartId(score.parts[0].id);
@@ -249,6 +261,16 @@ export function App() {
           hasHarmony={score.parts.some((p) => p.id === "harmony")}
           onApply={applyHarmony}
           onRemove={removeHarmony}
+        />
+      )}
+
+      {!partId.startsWith("orch-") && partId !== "harmony" && score.parts[activeIndex] && (
+        <OrchestratePanel
+          score={score}
+          source={score.parts[activeIndex]}
+          hasArrangement={score.parts.some((p) => p.id.startsWith("orch-"))}
+          onApply={applyOrchestra}
+          onRemove={removeOrchestra}
         />
       )}
 

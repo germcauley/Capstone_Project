@@ -11,3 +11,5 @@ export * from "./transcribe.js";
 export * from "./harmony.js";
 export * from "./accompaniment.js";
 export * from "./expand.js";
+export * from "./instruments.js";
+export * from "./orchestra.js";

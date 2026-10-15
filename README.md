@@ -34,4 +34,5 @@ Model output is never trusted: it is parsed, snapped to allowed durations, folde
 Done: score model, staff render, playback, piano roll + staff editing, step entry keyboard, undo/redo, add staves, mic hum capture (click track, tempo + meter, key suggestion, review before adding).
 Also: rule-based harmony (Viterbi chords, chord symbols, four accompaniment styles).
 Also: expand melody (Continue / Vary / Develop-to-form, 3 candidates, ghost preview, validated).
-Next: Basic Pitch transcription path, orchestration.
+Also: orchestral arrangement (string quartet / chamber / full orchestra): rule-based or Claude-written plan, editable role grid, deterministic realisation inside instrument ranges, multi-instrument playback.
+Next: Basic Pitch transcription path, dynamics and articulations, alto clef and transposing instruments, project save/export.
