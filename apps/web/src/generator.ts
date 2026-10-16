@@ -13,6 +13,10 @@ export const proxyComplete: Complete = async (system, prompt) => {
     throw new Error("Can't reach the generator. Start it with `pnpm dev` from the project root.");
   }
   const body = (await res.json().catch(() => ({}))) as { text?: string; error?: string };
+  // the dev server answers 404/5xx with an empty body when the proxy process isn't running
+  if (!res.ok && !body.error) {
+    throw new Error("Can't reach the generator. Start it with `pnpm dev` from the project root (it runs the proxy too).");
+  }
   if (!res.ok || !body.text) throw new Error(body.error || `Generator failed (${res.status})`);
   return body.text;
 };
