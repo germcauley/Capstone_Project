@@ -15,6 +15,8 @@ interface Voice {
 
 let ctx: AudioContext | null = null;
 const loaded = new Map<string, Promise<Voice>>();
+/** Instruments whose samples have finished loading. stop() must act on these synchronously. */
+const ready = new Set<Voice>();
 let stopFns: (() => void)[] = [];
 
 export function getContext(): AudioContext {
@@ -47,7 +49,9 @@ export async function play(score: Score, onEnd: () => void): Promise<void> {
   const programs = [...new Set(notes.map((n) => n.program))];
   const voices = new Map<number, Voice>();
   await Promise.all(programs.map(async (pr) => voices.set(pr, await instrumentFor(pr))));
+  voices.forEach((v) => ready.add(v));
 
+  // must be synchronous: an async stop would run after the notes below are queued and cancel them
   stop();
   const t0 = c.currentTime + 0.1;
   let end = 0;
@@ -64,7 +68,7 @@ export async function play(score: Score, onEnd: () => void): Promise<void> {
 export function stop() {
   stopFns.forEach((f) => f());
   stopFns = [];
-  loaded.forEach((p) => p.then((v) => v.stop()).catch(() => {}));
+  ready.forEach((v) => v.stop());
 }
 
 /** Short audition of one pitch while editing. */
